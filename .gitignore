@@ -4,3 +4,4 @@ obj/
 *.vspscc
 packages/
 .vs/
+*.user

@@ -4,3 +4,5 @@ obj/
 *.vspscc
 packages/
 .vs/
+/MoqBug/MoqBug/MoqBug.csproj.user
+/MoqBug/MoqBug/bin/Debug

@@ -14,5 +14,6 @@ namespace NewsFeedProcessor.Models
         public string Content { get; set; }
         public string BaseUri { get; set; }
         public DateTimeOffset LastUpdatedTime { get; set; }
+        public string Identifier { get; set; }
     }
 }

@@ -17,7 +17,8 @@ namespace NewsFeedProcessor.Registrations
                 .ForMember(n => n.Author, s => s.MapFrom(s2 => s2.Authors.FirstOrDefault().Name))
                 .ForMember(n => n.BaseUri, s => s.MapFrom(s2 => s2.BaseUri.AbsoluteUri))
                 .ForMember(n => n.Title, s => s.MapFrom(s2 => s2.Title.Text))
-                .ForMember(n => n.Summary, s => s.MapFrom(s2 => s2.Summary.Text));
+                .ForMember(n => n.Summary, s => s.MapFrom(s2 => s2.Summary.Text))
+                .ForMember(n => n.Identifier, s => s.MapFrom(s2 => s2.Id));
             CreateMap<NewsFeed, NewsFeed>()
                 .ForMember(n => n.NewsFeedId, s => s.Ignore());
         }

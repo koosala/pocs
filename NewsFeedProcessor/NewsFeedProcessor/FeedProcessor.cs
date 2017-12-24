@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.Entity.Migrations;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Xml;
 using AutoMapper;
+using log4net;
 using NewsFeedProcessor.DataAccess;
 using NewsFeedProcessor.Models;
 
@@ -11,31 +15,48 @@ namespace NewsFeedProcessor
 {
     public enum ProcessingStatus
     {
+        [Description("Feed processed successfully")]
         Processed,
+        [Description("No changes to feed since last update")]
         NoChangeSinceLastUpdate,
-        IncorrectFeed
+        [Description("An error was encoutered processing the feed. Refer the log for more information")]
+        ErrorProcessingFeed
     }
     class FeedProcessor
     {
+        private readonly ILog _logger;
+
+        internal FeedProcessor()
+        {
+            _logger = LogManager.GetLogger("NewsFeedLogger");
+        }
+
         public ProcessingStatus ProcessFeed(string url)
         {
             ProcessingStatus status = ProcessingStatus.NoChangeSinceLastUpdate;
-
-            using (var context = new FeedDataContext())
+            try
             {
-                using (var reader = XmlReader.Create(url))
+                using (var context = new FeedDataContext())
                 {
-                    var feed = SyndicationFeed.Load(reader);
-                    var newsFeed = GetTranslatedFeed(feed, context, url);
-
-                    if (newsFeed != null)
+                    using (var reader = XmlReader.Create(url))
                     {
-                        context.NewsFeeds.AddOrUpdate(newsFeed);
-                        context.NewsFeedItems.AddRange(newsFeed.Items);
-                        context.SaveChanges();
-                        status = ProcessingStatus.Processed;
+                        var feed = SyndicationFeed.Load(reader);
+                        var newsFeed = GetTranslatedFeed(feed, context, url);
+
+                        if (newsFeed != null)
+                        {
+                            context.NewsFeeds.AddOrUpdate(newsFeed);
+                            context.NewsFeedItems.AddRange(newsFeed.Items);
+                            context.SaveChanges();
+                            status = ProcessingStatus.Processed;
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+                status = ProcessingStatus.ErrorProcessingFeed;
             }
 
             return status;
@@ -62,7 +83,7 @@ namespace NewsFeedProcessor
             // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var item in candidateItems)
             {
-                var existingItem = context.NewsFeedItems.FirstOrDefault(f => f.BaseUri == item.BaseUri);
+                var existingItem = context.NewsFeedItems.FirstOrDefault(f => f.Identifier == item.Identifier);
 
                 if (item.LastUpdatedTime >= existingItem?.LastUpdatedTime) continue;
 

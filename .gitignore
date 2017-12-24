@@ -6,4 +6,3 @@ packages/
 .vs/
 *.user
 /MoqBug/MoqBug/bin/Debug
-/NewsFeedProcessor/NewsFeedProcessor/bin/Debug

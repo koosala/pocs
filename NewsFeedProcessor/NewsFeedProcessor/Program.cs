@@ -1,5 +1,6 @@
 ﻿using System;
 using AutoMapper;
+using EnumsNET;
 using NewsFeedProcessor.Registrations;
 
 namespace NewsFeedProcessor
@@ -16,7 +17,7 @@ namespace NewsFeedProcessor
 
                 InitializeMapper();
                 var result = new FeedProcessor().ProcessFeed(url);
-                if (result == ProcessingStatus.NoChangeSinceLastUpdate) Console.WriteLine("No changes to the feed since last update");
+                Console.WriteLine(result.AsString(EnumFormat.Description));
             }
         }
 

@@ -12,13 +12,15 @@ namespace NewsFeedProcessor.Registrations
             CreateMap<SyndicationFeed, NewsFeed>()
                 .ForMember(n => n.BaseUri, s => s.MapFrom(s2 => s2.BaseUri.AbsoluteUri))
                 .ForMember(n => n.Title, s => s.MapFrom(s2 => s2.Title.Text))
-                .ForMember(n => n.Description, s => s.MapFrom(s2 => s2.Description.Text));
+                .ForMember(n => n.Description, s => s.MapFrom(s2 => s2.Description.Text))
+                .ForMember(n => n.LastUpdatedTime, s => s.MapFrom(s2 => s2.LastUpdatedTime.DateTime));
             CreateMap<SyndicationItem, NewsFeedItem>()
                 .ForMember(n => n.Author, s => s.MapFrom(s2 => s2.Authors.FirstOrDefault().Name))
                 .ForMember(n => n.BaseUri, s => s.MapFrom(s2 => s2.BaseUri.AbsoluteUri))
                 .ForMember(n => n.Title, s => s.MapFrom(s2 => s2.Title.Text))
                 .ForMember(n => n.Summary, s => s.MapFrom(s2 => s2.Summary.Text))
-                .ForMember(n => n.Identifier, s => s.MapFrom(s2 => s2.Id));
+                .ForMember(n => n.Identifier, s => s.MapFrom(s2 => s2.Id))
+                .ForMember(n => n.LastUpdatedTime, s => s.MapFrom(s2 => s2.LastUpdatedTime.DateTime));
             CreateMap<NewsFeed, NewsFeed>()
                 .ForMember(n => n.NewsFeedId, s => s.Ignore());
         }

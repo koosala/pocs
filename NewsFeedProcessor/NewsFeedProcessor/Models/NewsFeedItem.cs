@@ -3,7 +3,7 @@ using System.ServiceModel.Syndication;
 
 namespace NewsFeedProcessor.Models
 {
-    class NewsFeedItem
+    public class NewsFeedItem
     {
         public int NewsFeedItemId { get; set; }
         public string Title { get; set; }
@@ -13,7 +13,7 @@ namespace NewsFeedProcessor.Models
         public string Author { get; set; }
         public string Content { get; set; }
         public string BaseUri { get; set; }
-        public DateTimeOffset LastUpdatedTime { get; set; }
+        public DateTime LastUpdatedTime { get; set; }
         public string Identifier { get; set; }
     }
 }

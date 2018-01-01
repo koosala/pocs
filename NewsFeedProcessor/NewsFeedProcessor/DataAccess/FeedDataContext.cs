@@ -4,9 +4,9 @@ using NewsFeedProcessor.Models;
 
 namespace NewsFeedProcessor.DataAccess
 {
-    class FeedDataContext : DbContext
+    public class FeedDataContext : DbContext
     {
-        internal FeedDataContext() : base("NewsFeedRepository")
+        public FeedDataContext() : base("NewsFeedRepository")
         {
         }
 

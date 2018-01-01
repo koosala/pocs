@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Entity.Migrations;
-using System.Data.Entity.Validation;
 using System.Linq;
+using System.Net;
 using System.ServiceModel.Syndication;
-using System.Xml;
 using AutoMapper;
 using log4net;
 using NewsFeedProcessor.DataAccess;
@@ -38,19 +37,24 @@ namespace NewsFeedProcessor
             {
                 using (var context = new FeedDataContext())
                 {
-                    using (var reader = XmlReader.Create(url))
-                    {
-                        var feed = SyndicationFeed.Load(reader);
-                        var newsFeed = GetTranslatedFeed(feed, context, url);
+                    var webRequest = (HttpWebRequest)WebRequest.Create(url);
+                    webRequest.Accept = "application/xml";
+                    using (var response = webRequest.GetResponse())
+                    using (var stream = response.GetResponseStream())
+                        if (stream != null)
+                            using (var reader = new MyXmlReader(stream))
+                            {
+                                var feed = SyndicationFeed.Load(reader);
+                                var newsFeed = GetTranslatedFeed(feed, context, url);
 
-                        if (newsFeed != null)
-                        {
-                            context.NewsFeeds.AddOrUpdate(newsFeed);
-                            context.NewsFeedItems.AddRange(newsFeed.Items);
-                            context.SaveChanges();
-                            status = ProcessingStatus.Processed;
-                        }
-                    }
+                                if (newsFeed != null)
+                                {
+                                    context.NewsFeeds.AddOrUpdate(newsFeed);
+                                    context.NewsFeedItems.AddRange(newsFeed.Items);
+                                    context.SaveChanges();
+                                    status = ProcessingStatus.Processed;
+                                }
+                            }
                 }
             }
             catch (Exception ex)
